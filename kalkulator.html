@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Keren</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, red, green, blue);
+      animation: bg-animation 5s infinite alternate;
+    }
+
+    @keyframes bg-animation {
+      0% {
+        background: rgb(255, 0, 0);
+      }
+      33% {
+        background: rgb(0, 255, 0);
+      }
+      66% {
+        background: rgb(0, 0, 255);
+      }
+      100% {
+        background: rgb(255, 0, 0);
+      }
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      text-align: center;
+      color: white;
+      width: 300px;
+    }
+
+    .display {
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 2em;
+      margin-bottom: 20px;
+      padding: 8px;
+      text-align: right;
+      width: 95%;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.2em;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .button:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .button.clear {
+      background: #ff4d4d;
+    }
+
+    .button.equals {
+      background: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" class="display" id="display" disabled>
+    <div class="buttons">
+      <button class="button" onclick="appendNumber('7')">7</button>
+      <button class="button" onclick="appendNumber('8')">8</button>
+      <button class="button" onclick="appendNumber('9')">9</button>
+      <button class="button" onclick="appendOperator('/')">/</button>
+
+      <button class="button" onclick="appendNumber('4')">4</button>
+      <button class="button" onclick="appendNumber('5')">5</button>
+      <button class="button" onclick="appendNumber('6')">6</button>
+      <button class="button" onclick="appendOperator('*')">*</button>
+
+      <button class="button" onclick="appendNumber('1')">1</button>
+      <button class="button" onclick="appendNumber('2')">2</button>
+      <button class="button" onclick="appendNumber('3')">3</button>
+      <button class="button" onclick="appendOperator('-')">-</button>
+
+      <button class="button" onclick="appendNumber('0')">0</button>
+      <button class="button" onclick="appendOperator('.')">.</button>
+      <button class="button equals" onclick="calculate()">=</button>
+      <button class="button" onclick="appendOperator('+')">+</button>
+
+      <button class="button clear" style="grid-column: span 4;" onclick="clearDisplay()">Clear</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function appendNumber(number) {
+      display.value += number;
+    }
+
+    function appendOperator(operator) {
+      if (!display.value || /[+\-*/.]$/.test(display.value)) return;
+      display.value += operator;
+    }
+
+    function calculate() {
+      try {
+        display.value = eval(display.value);
+      } catch {
+        display.value = 'Error';
+      }
+    }
+
+    function clearDisplay() {
+      display.value = '';
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(90deg, rgb(255, 0, 0), rgb(0, 255, 0), rgb(0, 0, 255));
+      background-size: 600% 600%;
+      animation: backgroundAnimation 10s infinite;
+      color: #fff;
+    }
+
+    @keyframes backgroundAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .app {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 24px;
+    }
+
+    header button {
+      background: #28a745;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    header button:hover {
+      background: #218838;
+    }
+
+    #notesContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .note {
+      background: #fff;
+      color: #333;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .note button {
+      background: #dc3545;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .note button:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Notes App</h1>
+      <button id="addNoteBtn">Tambah Catatan</button>
+    </header>
+    <div id="notesContainer"></div>
+  </div>
+  <script>
+    const notesContainer = document.getElementById('notesContainer');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+
+    // Load notes from localStorage
+    function loadNotes() {
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      savedNotes.forEach(note => createNoteElement(note));
+    }
+
+    // Save notes to localStorage
+    function saveNotes() {
+      const notes = Array.from(notesContainer.children).map(note => note.querySelector('p').textContent);
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
+
+    // Create a new note element
+    function createNoteElement(text) {
+      const note = document.createElement('div');
+      note.classList.add('note');
+
+      const noteText = document.createElement('p');
+      noteText.textContent = text;
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Hapus';
+      deleteBtn.onclick = () => {
+        note.remove();
+        saveNotes();
+      };
+
+      note.appendChild(noteText);
+      note.appendChild(deleteBtn);
+      notesContainer.appendChild(note);
+    }
+
+    // Add a new note
+    addNoteBtn.addEventListener('click', () => {
+      const noteText = prompt('Masukkan teks catatan:');
+      if (noteText) {
+        createNoteElement(noteText);
+        saveNotes();
+      }
+    });
+
+    // Initialize the app
+    loadNotes();
+  </script>
+</body>
+</html>
