@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Landing Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    header h1 {
+      font-size: 3em;
+      margin: 0;
+      animation: fadeIn 2s ease-in-out;
+    }
+    header p {
+      font-size: 1.2em;
+      margin: 10px 0;
+      animation: fadeIn 2s ease-in-out 0.5s;
+    }
+    .btn-container {
+      margin-top: 20px;
+    }
+    .btn {
+      display: inline-block;
+      background: #fff;
+      color: #2575fc;
+      padding: 10px 20px;
+      font-size: 1em;
+      text-transform: uppercase;
+      border-radius: 25px;
+      text-decoration: none;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.1);
+      background: #2575fc;
+      color: #fff;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+      animation: slideUp 1.5s ease-in-out;
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px;
+      text-align: center;
+      width: 80%;
+      max-width: 400px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      font-size: 0.9em;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @keyframes slideUp {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to My Awesome Page</h1>
+    <p>Explore the interactive features below</p>
+    <div class="btn-container">
+      <a class="btn" href="#content">Learn More</a>
+      <a class="btn" href="#contact">Contact</a>
+    </div>
+  </header>
+  
+  <div id="content" class="content">
+    <div class="box">
+      <h2>Feature 1</h2>
+      <p>Discover amazing animations and effects.</p>
+    </div>
+    <div class="box">
+      <h2>Feature 2</h2>
+      <p>Seamless transitions and responsive design.</p>
+    </div>
+    <div class="box">
+      <h2>Feature 3</h2>
+      <p>Crafted with modern web technologies.</p>
+    </div>
+  </div>
+
+  <footer id="contact">
+    <p>Made with ❤️ using HTML, CSS, and JavaScript</p>
+  </footer>
+
+  <script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Example of interactive dynamic effect
+    const boxes = document.querySelectorAll('.box');
+    boxes.forEach(box => {
+      box.addEventListener('click', () => {
+        alert(`You clicked on ${box.querySelector('h2').textContent}`);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch the Coin</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, #4e54c8, #8f94fb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      background: #222;
+      border: 2px solid white;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <canvas id="gameCanvas" width="360" height="640"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreElement = document.getElementById("score");
+
+    // Game variables
+    let score = 0;
+    let gameOver = false;
+
+    // Player object
+    const player = {
+      x: canvas.width / 2 - 30,
+      y: canvas.height - 60,
+      width: 60,
+      height: 10,
+      color: "white",
+      speed: 6,
+      dx: 0,
+    };
+
+    // Coin object
+    const coin = {
+      x: Math.random() * (canvas.width - 20),
+      y: 0,
+      width: 20,
+      height: 20,
+      color: "gold",
+      speed: 3,
+    };
+
+    // Draw rectangle (player and coin)
+    function drawRect(x, y, width, height, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, width, height);
+    }
+
+    // Draw coin (circle)
+    function drawCoin(x, y, radius, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Update player position
+    function updatePlayer() {
+      player.x += player.dx;
+
+      // Prevent player from going out of bounds
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+    }
+
+    // Update coin position
+    function updateCoin() {
+      coin.y += coin.speed;
+
+      // Check if coin touches player
+      if (
+        coin.y + coin.height >= player.y &&
+        coin.x + coin.width >= player.x &&
+        coin.x <= player.x + player.width
+      ) {
+        score++;
+        resetCoin();
+      }
+
+      // Check if coin touches the ground
+      if (coin.y > canvas.height) {
+        gameOver = true;
+      }
+    }
+
+    // Reset coin position
+    function resetCoin() {
+      coin.x = Math.random() * (canvas.width - coin.width);
+      coin.y = 0;
+      coin.speed += 0.2; // Increase difficulty
+    }
+
+    // Render game
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw player and coin
+      drawRect(player.x, player.y, player.width, player.height, player.color);
+      drawCoin(coin.x + coin.width / 2, coin.y + coin.height / 2, coin.width / 2, coin.color);
+
+      // Update score
+      scoreElement.textContent = `Score: ${score}`;
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (!gameOver) {
+        updatePlayer();
+        updateCoin();
+        render();
+        requestAnimationFrame(gameLoop);
+      } else {
+        alert("Game Over! Your Score: " + score);
+        document.location.reload();
+      }
+    }
+
+    // Control player with touch
+    canvas.addEventListener("touchmove", (event) => {
+      const touch = event.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      player.x = Math.min(Math.max(touch.clientX - rect.left - player.width / 2, 0), canvas.width - player.width);
+    });
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>

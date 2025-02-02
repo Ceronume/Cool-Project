@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Gallery</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .gallery-container {
+      perspective: 1000px;
+      width: 80vw;
+      height: 80vh;
+      position: relative;
+    }
+
+    .gallery {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      animation: rotateGallery 10s infinite linear;
+    }
+
+    .gallery img {
+      position: absolute;
+      width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.5s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.2) translateZ(50px);
+    }
+
+    @keyframes rotateGallery {
+      from {
+        transform: rotateY(0deg);
+      }
+      to {
+        transform: rotateY(360deg);
+      }
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="gallery-container">
+    <div class="gallery" id="gallery">
+      <!-- Gambar akan ditambahkan melalui JavaScript -->
+    </div>
+  </div>
+
+  <footer>
+    <p>Interactive 3D Gallery by You | Made with ❤️ using HTML, CSS & JS</p>
+  </footer>
+
+  <script>
+    const gallery = document.getElementById('gallery');
+
+    // Array gambar
+    const images = [
+      'https://via.placeholder.com/300x200/FF5733/FFFFFF?text=Image+1',
+      'https://via.placeholder.com/300x200/33FF57/FFFFFF?text=Image+2',
+      'https://via.placeholder.com/300x200/3357FF/FFFFFF?text=Image+3',
+      'https://via.placeholder.com/300x200/FF33A1/FFFFFF?text=Image+4',
+      'https://via.placeholder.com/300x200/FFFF33/000000?text=Image+5',
+      'https://via.placeholder.com/300x200/33FFFF/000000?text=Image+6',
+    ];
+
+    // Menambahkan gambar ke galeri dengan posisi 3D
+    images.forEach((image, index) => {
+      const angle = (360 / images.length) * index;
+      const img = document.createElement('img');
+      img.src = image;
+      img.style.transform = `rotateY(${angle}deg) translateZ(400px)`;
+      gallery.appendChild(img);
+    });
+  </script>
+</body>
+</html>

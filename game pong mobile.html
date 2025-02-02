@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game - Single Player</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      background: #000;
+      border: 2px solid white;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pong" width="360" height="640"></canvas>
+
+  <script>
+    const canvas = document.getElementById("pong");
+    const ctx = canvas.getContext("2d");
+
+    // Ball
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speed: 4,
+      velocityX: 4,
+      velocityY: 4,
+      color: "white",
+    };
+
+    // Paddle
+    const paddleWidth = 10, paddleHeight = 80;
+    const player = {
+      x: 10,
+      y: canvas.height / 2 - paddleHeight / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "white",
+      score: 0,
+    };
+    const ai = {
+      x: canvas.width - paddleWidth - 10,
+      y: canvas.height / 2 - paddleHeight / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "white",
+      score: 0,
+    };
+
+    // Draw rectangle
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    // Draw circle
+    function drawCircle(x, y, r, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2, false);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Draw text
+    function drawText(text, x, y, color) {
+      ctx.fillStyle = color;
+      ctx.font = "30px Arial";
+      ctx.fillText(text, x, y);
+    }
+
+    // Reset ball
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.velocityX = -ball.velocityX;
+      ball.speed = 4;
+    }
+
+    // Collision detection
+    function collision(b, p) {
+      return (
+        b.x - b.radius < p.x + p.width &&
+        b.x + b.radius > p.x &&
+        b.y - b.radius < p.y + p.height &&
+        b.y + b.radius > p.y
+      );
+    }
+
+    // AI logic
+    function moveAI() {
+      if (ball.y < ai.y + ai.height / 2) {
+        ai.y -= 4;
+      } else if (ball.y > ai.y + ai.height / 2) {
+        ai.y += 4;
+      }
+
+      ai.y = Math.max(Math.min(ai.y, canvas.height - ai.height), 0);
+    }
+
+    // Update game logic
+    function update() {
+      ball.x += ball.velocityX;
+      ball.y += ball.velocityY;
+
+      // Ball collision with walls
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.velocityY = -ball.velocityY;
+      }
+
+      // Determine paddle collision
+      let currentPlayer = ball.x < canvas.width / 2 ? player : ai;
+
+      if (collision(ball, currentPlayer)) {
+        ball.velocityX = -ball.velocityX;
+        ball.speed += 0.2;
+      }
+
+      // Update score
+      if (ball.x - ball.radius < 0) {
+        ai.score++;
+        resetBall();
+      } else if (ball.x + ball.radius > canvas.width) {
+        player.score++;
+        resetBall();
+      }
+
+      moveAI();
+    }
+
+    // Render game
+    function render() {
+      drawRect(0, 0, canvas.width, canvas.height, "black");
+
+      // Draw scores
+      drawText(player.score, canvas.width / 4, 50, "white");
+      drawText(ai.score, (canvas.width * 3) / 4, 50, "white");
+
+      // Draw paddles and ball
+      drawRect(player.x, player.y, player.width, player.height, player.color);
+      drawRect(ai.x, ai.y, ai.width, ai.height, ai.color);
+      drawCircle(ball.x, ball.y, ball.radius, ball.color);
+    }
+
+    // Game loop
+    function game() {
+      update();
+      render();
+    }
+
+    // Paddle control for mobile (touch support)
+    canvas.addEventListener("touchmove", (event) => {
+      const touch = event.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const y = touch.clientY - rect.top;
+
+      player.y = Math.min(Math.max(y - player.height / 2, 0), canvas.height - player.height);
+    });
+
+    setInterval(game, 1000 / 60);
+  </script>
+</body>
+</html>

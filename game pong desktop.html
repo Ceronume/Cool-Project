@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to bottom, #000428, #004e92);
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    canvas {
+      background: black;
+      border: 2px solid white;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pong" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("pong");
+    const ctx = canvas.getContext("2d");
+
+    // Ball
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speed: 5,
+      velocityX: 5,
+      velocityY: 5,
+      color: "white",
+    };
+
+    // Paddle
+    const paddleWidth = 10, paddleHeight = 100;
+    const player1 = {
+      x: 0,
+      y: (canvas.height - paddleHeight) / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "white",
+      score: 0,
+    };
+    const player2 = {
+      x: canvas.width - paddleWidth,
+      y: (canvas.height - paddleHeight) / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "white",
+      score: 0,
+    };
+
+    // Draw rectangle
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    // Draw circle
+    function drawCircle(x, y, r, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2, false);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Draw text
+    function drawText(text, x, y, color) {
+      ctx.fillStyle = color;
+      ctx.font = "30px Arial";
+      ctx.fillText(text, x, y);
+    }
+
+    // Game reset
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.velocityX = -ball.velocityX;
+      ball.speed = 5;
+    }
+
+    // Collision detection
+    function collision(b, p) {
+      return (
+        b.x - b.radius < p.x + p.width &&
+        b.x + b.radius > p.x &&
+        b.y - b.radius < p.y + p.height &&
+        b.y + b.radius > p.y
+      );
+    }
+
+    // Game update
+    function update() {
+      ball.x += ball.velocityX;
+      ball.y += ball.velocityY;
+
+      // Wall collision
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.velocityY = -ball.velocityY;
+      }
+
+      // Player paddle collision
+      let player = ball.x < canvas.width / 2 ? player1 : player2;
+
+      if (collision(ball, player)) {
+        ball.velocityX = -ball.velocityX;
+        ball.speed += 0.2;
+      }
+
+      // Update score
+      if (ball.x - ball.radius < 0) {
+        player2.score++;
+        resetBall();
+      } else if (ball.x + ball.radius > canvas.width) {
+        player1.score++;
+        resetBall();
+      }
+    }
+
+    // Render game
+    function render() {
+      drawRect(0, 0, canvas.width, canvas.height, "black");
+
+      drawText(player1.score, canvas.width / 4, 50, "white");
+      drawText(player2.score, (canvas.width * 3) / 4, 50, "white");
+
+      drawRect(player1.x, player1.y, player1.width, player1.height, player1.color);
+      drawRect(player2.x, player2.y, player2.width, player2.height, player2.color);
+
+      drawCircle(ball.x, ball.y, ball.radius, ball.color);
+    }
+
+    // Game loop
+    function game() {
+      update();
+      render();
+    }
+
+    // Control paddles
+    window.addEventListener("keydown", (event) => {
+      switch (event.key) {
+        case "w":
+          player1.y = Math.max(player1.y - 20, 0);
+          break;
+        case "s":
+          player1.y = Math.min(player1.y + 20, canvas.height - paddleHeight);
+          break;
+        case "ArrowUp":
+          player2.y = Math.max(player2.y - 20, 0);
+          break;
+        case "ArrowDown":
+          player2.y = Math.min(player2.y + 20, canvas.height - paddleHeight);
+          break;
+      }
+    });
+
+    setInterval(game, 1000 / 60);
+  </script>
+</body>
+</html>

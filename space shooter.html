@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Shooter</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    canvas {
+      display: block;
+      border: 2px solid white;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="360" height="640"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game settings
+    const spaceship = {
+      x: canvas.width / 2 - 15,
+      y: canvas.height - 60,
+      width: 30,
+      height: 30,
+      color: 'white',
+      speed: 5,
+    };
+    const bullets = [];
+    const meteors = [];
+    let score = 0;
+    let gameOver = false;
+
+    // Draw rectangle
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    // Draw text
+    function drawText(text, x, y, color, size = '20px') {
+      ctx.fillStyle = color;
+      ctx.font = `${size} Arial`;
+      ctx.fillText(text, x, y);
+    }
+
+    // Generate meteor
+    function createMeteor() {
+      const meteor = {
+        x: Math.random() * (canvas.width - 20),
+        y: -20,
+        width: 20,
+        height: 20,
+        color: 'red',
+        speed: 2 + Math.random() * 2,
+      };
+      meteors.push(meteor);
+    }
+
+    // Update game objects
+    function update() {
+      if (gameOver) return;
+
+      // Move bullets
+      bullets.forEach((bullet, index) => {
+        bullet.y -= 5;
+        if (bullet.y + bullet.height < 0) bullets.splice(index, 1);
+      });
+
+      // Move meteors
+      meteors.forEach((meteor, index) => {
+        meteor.y += meteor.speed;
+
+        // Check for collision with spaceship
+        if (
+          meteor.x < spaceship.x + spaceship.width &&
+          meteor.x + meteor.width > spaceship.x &&
+          meteor.y < spaceship.y + spaceship.height &&
+          meteor.y + meteor.height > spaceship.y
+        ) {
+          gameOver = true;
+        }
+
+        // Remove meteors off-screen
+        if (meteor.y > canvas.height) meteors.splice(index, 1);
+      });
+
+      // Collision detection (bullets and meteors)
+      bullets.forEach((bullet, bIndex) => {
+        meteors.forEach((meteor, mIndex) => {
+          if (
+            bullet.x < meteor.x + meteor.width &&
+            bullet.x + bullet.width > meteor.x &&
+            bullet.y < meteor.y + meteor.height &&
+            bullet.y + bullet.height > meteor.y
+          ) {
+            // Remove bullet and meteor
+            bullets.splice(bIndex, 1);
+            meteors.splice(mIndex, 1);
+            score += 10;
+          }
+        });
+      });
+
+      // Add new meteors periodically
+      if (Math.random() < 0.02) createMeteor();
+    }
+
+    // Render game objects
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw spaceship
+      drawRect(spaceship.x, spaceship.y, spaceship.width, spaceship.height, spaceship.color);
+
+      // Draw bullets
+      bullets.forEach((bullet) => {
+        drawRect(bullet.x, bullet.y, bullet.width, bullet.height, bullet.color);
+      });
+
+      // Draw meteors
+      meteors.forEach((meteor) => {
+        drawRect(meteor.x, meteor.y, meteor.width, meteor.height, meteor.color);
+      });
+
+      // Draw score
+      drawText(`Score: ${score}`, 10, 30, 'white');
+
+      if (gameOver) {
+        drawText('GAME OVER', canvas.width / 2 - 70, canvas.height / 2, 'red', '30px');
+        drawText('Refresh to Restart', canvas.width / 2 - 90, canvas.height / 2 + 40, 'white', '16px');
+      }
+    }
+
+    // Game loop
+    function gameLoop() {
+      update();
+      render();
+      if (!gameOver) requestAnimationFrame(gameLoop);
+    }
+
+    // Controls
+    canvas.addEventListener('touchmove', (event) => {
+      const touch = event.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      spaceship.x = Math.min(Math.max(touch.clientX - rect.left - spaceship.width / 2, 0), canvas.width - spaceship.width);
+    });
+
+    canvas.addEventListener('touchstart', () => {
+      bullets.push({
+        x: spaceship.x + spaceship.width / 2 - 2.5,
+        y: spaceship.y,
+        width: 5,
+        height: 10,
+        color: 'yellow',
+      });
+    });
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>

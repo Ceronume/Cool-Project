@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tebak Angka</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    input {
+      width: 50%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #ff9800;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #e68a00;
+    }
+
+    .message {
+      margin: 20px 0;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Game Tebak Angka</h1>
+  <p>Tebak angka antara <b>1</b> dan <b>100</b>. Anda memiliki 7 kesempatan!</p>
+  <input type="number" id="guessInput" placeholder="Masukkan angka..." />
+  <button id="submitBtn">Tebak</button>
+  <button id="restartBtn" style="display: none;">Main Lagi</button>
+  <div class="message" id="message"></div>
+
+  <script>
+    let randomNumber = Math.floor(Math.random() * 100) + 1; // Angka acak 1-100
+    let attempts = 7;
+
+    const guessInput = document.getElementById("guessInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const message = document.getElementById("message");
+
+    function checkGuess() {
+      const userGuess = parseInt(guessInput.value);
+
+      // Validasi input
+      if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        message.textContent = "Masukkan angka antara 1 dan 100!";
+        return;
+      }
+
+      attempts--;
+
+      if (userGuess === randomNumber) {
+        message.textContent = `Selamat! Angka ${userGuess} benar! 🎉`;
+        endGame(true);
+      } else if (attempts === 0) {
+        message.textContent = `Game Over! Angka yang benar adalah ${randomNumber}.`;
+        endGame(false);
+      } else {
+        const hint = userGuess > randomNumber ? "Terlalu besar!" : "Terlalu kecil!";
+        message.textContent = `${hint} Anda memiliki ${attempts} kesempatan lagi.`;
+      }
+
+      guessInput.value = "";
+      guessInput.focus();
+    }
+
+    function endGame(win) {
+      guessInput.disabled = true;
+      submitBtn.disabled = true;
+      restartBtn.style.display = "inline-block";
+
+      if (win) {
+        document.body.style.background = "linear-gradient(135deg, #76b852, #8dc26f)";
+      } else {
+        document.body.style.background = "linear-gradient(135deg, #ff5f6d, #ffc371)";
+      }
+    }
+
+    function restartGame() {
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 7;
+
+      guessInput.disabled = false;
+      submitBtn.disabled = false;
+      restartBtn.style.display = "none";
+      message.textContent = "";
+
+      guessInput.value = "";
+      guessInput.focus();
+
+      document.body.style.background = "linear-gradient(135deg, #00c6ff, #0072ff)";
+    }
+
+    submitBtn.addEventListener("click", checkGuess);
+    restartBtn.addEventListener("click", restartGame);
+  </script>
+</body>
+</html>
